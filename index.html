@@ -347,8 +347,15 @@
         const SUPABASE_KEY = 'sb_publishable_N9VqWGOsV95ElNOBLy2vng_wqzc9Eb0';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const TELEGRAM_BOT_TOKEN = '9272036554: AAFK4kVuijtWnMzwzuitpNOpp2 rWbF-Ze_4';
-        const TELEGRAM_CHAT_ID = '6250879624';
+      const TELEGRAM_BOT_TOKEN = "9272036554:AAFK4kVuijtWnMzwzuitpNOpp2rWbF-Ze_4";
+const TELEGRAM_CHAT_ID = "6250879624";
+
+let telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&parse_mode=Markdown&text=` + encodeURIComponent(messageText);
+
+fetch(telegramUrl)
+    .then(res => res.json())
+    .then(data => console.log("Telegram success:", data))
+    .catch(err => console.error("Telegram error:", err));
 
         const FALLBACK_IMG = 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop';
         
@@ -737,3 +744,4 @@
     </script>
 </body>
 </html>
+
