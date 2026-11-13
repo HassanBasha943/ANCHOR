@@ -59,7 +59,7 @@
                 <i class="fa-solid fa-plus"></i> Add Product
             </button>
             <button type="button" onclick="toggleOrdersModal()" class="bg-anchor-obsidian text-anchor-pearl border border-anchor-border px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase hover:border-anchor-emerald transition flex items-center gap-1 shadow-md">
-                <i class="fa-solid fa-box-archive text-anchor-emerald"></i> Customer Orders (<span id="orders-count">0</span>)
+                <i class="fa-solid fa-box-archive text-aura-emerald"></i> Customer Orders (<span id="orders-count">0</span>)
             </button>
             <button type="button" onclick="adminLogout()" class="bg-aura-crimson/90 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase hover:bg-red-700 transition">
                 Exit
@@ -347,15 +347,8 @@
         const SUPABASE_KEY = 'sb_publishable_N9VqWGOsV95ElNOBLy2vng_wqzc9Eb0';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      const TELEGRAM_BOT_TOKEN = "9272036554:AAFK4kVuijtWnMzwzuitpNOpp2rWbF-Ze_4";
-const TELEGRAM_CHAT_ID = "6250879624";
-
-let telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&parse_mode=Markdown&text=` + encodeURIComponent(messageText);
-
-fetch(telegramUrl)
-    .then(res => res.json())
-    .then(data => console.log("Telegram success:", data))
-    .catch(err => console.error("Telegram error:", err));
+        const TELEGRAM_BOT_TOKEN = "9272036554:AAFK4kVuijtWnMzwzuitpNOpp2rWbF-Ze_4";
+        const TELEGRAM_CHAT_ID = "6250879624";
 
         const FALLBACK_IMG = 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop';
         
@@ -633,7 +626,7 @@ fetch(telegramUrl)
             let address = document.getElementById('cust-address').value;
             let notes = document.getElementById('cust-notes').value || 'لا يوجد';
 
-            let messageText = `🛍️ *أوردر جديد في متجر AURA!*\n\n` +
+            let messageText = `🛍️ *أوردر جديد في متجر ANCHOR!*\n\n` +
                               `👤 *العميل:* ${name}\n` +
                               `📞 *التليفون:* ${phone}\n` +
                               `📧 *الإيميل:* ${email}\n` +
@@ -646,7 +639,10 @@ fetch(telegramUrl)
 
             let telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&parse_mode=Markdown&text=` + encodeURIComponent(messageText);
             
-            fetch(telegramUrl).catch(() => {});
+            fetch(telegramUrl)
+                .then(res => res.json())
+                .then(data => console.log("Telegram success:", data))
+                .catch(err => console.error("Telegram error:", err));
 
             const newOrder = {
                 id: 'ord-' + Date.now(),
@@ -661,12 +657,12 @@ fetch(telegramUrl)
             cart = [];
             localStorage.removeItem('aura_cart');
             
-            showToast('تم إرسال الطلب بنجاح!');
+            showToast('تم إرسال الطلب بنجاح وصلك عالتيليجرام!');
             
             setTimeout(() => {
                 closeCheckoutModal();
                 window.location.href = window.location.pathname;
-            }, 1000);
+            }, 1500);
         }
 
         function toggleOrdersModal() {
@@ -744,4 +740,3 @@ fetch(telegramUrl)
     </script>
 </body>
 </html>
-
