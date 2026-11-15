@@ -1,15 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANCHOR | Store</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -35,7 +34,7 @@
             }
         }
     </script>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -46,6 +45,7 @@
         .bg-glass { background: rgba(15, 17, 21, 0.88); backdrop-filter: blur(14px); }
     </style>
 </head>
+
 <body class="bg-aura-obsidian text-aura-pearl font-sans antialiased min-h-screen flex flex-col">
 
     <!-- Sticky Admin Banner -->
@@ -54,7 +54,7 @@
             <i class="fa-solid fa-shield-halved text-sm text-aura-emerald animate-pulse"></i>
             <span class="tracking-wider">ANCHOR ADMIN CONTROL MODE</span>
         </div>
-        
+
         <div class="flex items-center gap-2">
             <button type="button" onclick="toggleAddProductForm()" class="bg-aura-emerald text-aura-obsidian px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase hover:bg-white transition flex items-center gap-1 shadow-md">
                 <i class="fa-solid fa-plus"></i> Add Product
@@ -106,7 +106,7 @@
             <button type="button" onclick="closeAdminModal()" class="absolute top-4 right-4 text-aura-muted hover:text-white p-2">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-            
+
             <div class="text-center mb-6">
                 <div class="w-12 h-12 bg-aura-emerald/10 text-aura-emerald border border-aura-emerald/30 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
                     <i class="fa-solid fa-user-lock"></i>
@@ -173,7 +173,7 @@
                 <h3 class="font-serif text-xl font-bold text-aura-pearl">Add New Item</h3>
                 <button type="button" onclick="toggleAddProductForm()" class="text-aura-muted hover:text-white text-xs">Close</button>
             </div>
-            
+
             <form onsubmit="handleAddNewProduct(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
                 <div>
                     <label class="block font-medium text-aura-muted mb-1">Product Title *</label>
@@ -182,8 +182,8 @@
                 <div>
                     <label class="block font-medium text-aura-muted mb-1">Category *</label>
                     <select id="new-p-cat" class="w-full bg-aura-obsidian border border-aura-border text-aura-pearl rounded-lg p-2.5 focus:border-aura-emerald focus:outline-none">
-                        <option value="hoodie">hoodie</option> 
-                        <option value="suit">suit</option> 
+                        <option value="hoodie">hoodie</option>
+                        <option value="suit">suit</option>
                         <option value="outfit">outfit</option>
                         <option value="t-shirt">t-shirt</option>
                         <option value="sweetpants">sweetpants</option>
@@ -266,7 +266,7 @@
                     <label class="block text-aura-muted mb-1">Email Address *</label>
                     <input type="email" id="cust-email" required placeholder="email@example.com" class="w-full bg-aura-obsidian border border-aura-border text-aura-pearl rounded-lg p-2.5 focus:border-aura-emerald focus:outline-none">
                 </div>
-                
+
                 <div>
                     <label class="block text-aura-muted mb-1 font-bold text-aura-pearl">Payment Method *</label>
                     <select id="cust-payment" class="w-full bg-aura-obsidian border border-aura-emerald text-aura-pearl rounded-lg p-2.5 font-semibold focus:outline-none">
@@ -340,7 +340,7 @@
     <!-- JavaScript -->
     <script>
         const SUPABASE_URL = 'https://rfazxdudrjjslszjdmlh.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmYXp4ZHVkcmpqc2xzempkbWxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDY5ODIsImV4cCI6MjExMDIyMjk4Mn0.b11fN2jpTvmd_qQXgJ9ZTRwZk_PJFwYJvakCehCYye4';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmYXp4ZHVkcmpqc2xzempkbWxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDY5ODIsImV4cCI6MjExMDIyMjk4Mn0.b11fN2jpTvmd_qQXgJ9ZTRwZk_PJFwYJvakCehCYye4';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Only this Supabase Auth user is allowed to use the admin dashboard.
@@ -348,8 +348,11 @@
 
         const FORMSPREE_ENDPOINT = "https://formspree.io/f/xjyybdyz";
 
+        // Telegram is called securely through the Supabase Edge Function.
+        // The Telegram bot token must NEVER be placed in this file.
+
         const FALLBACK_IMG = 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop';
-        
+
         const DEFAULT_PRODUCTS = [
             { id: 'a1', name: 'Obsidian Tailored Suit', category: 'suit', price: 3600, image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop', fabric: 'Premium Wool Blend' },
             { id: 'a2', name: 'Emerald Street Outfit', category: 'outfit', price: 2900, image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop', fabric: '100% Heavy Cotton' },
@@ -379,7 +382,6 @@
             } else {
                 isAdminMode = false;
 
-                // Sign out any authenticated account that is not the authorized admin.
                 if (session) {
                     await supabaseClient.auth.signOut();
                 }
@@ -395,7 +397,6 @@
             updateOrdersCount();
         });
 
-        // Check the currently authenticated Supabase user.
         async function isCurrentAdmin() {
             const { data, error } = await supabaseClient.auth.getUser();
 
@@ -436,11 +437,11 @@
         function renderProducts(items) {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
-            
+
             items.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'group flex flex-col bg-aura-slate rounded-2xl overflow-hidden border border-aura-border shadow-lg transition hover:border-aura-emerald/60';
-                
+
                 const adminHeader = isAdminMode ? `
                     <div class="bg-aura-obsidian text-white p-2 text-xs flex justify-between items-center border-b border-aura-border">
                         <span class="text-[10px] text-aura-emerald font-bold">ADMIN</span>
@@ -460,7 +461,7 @@
                         <span class="text-[10px] uppercase tracking-widest text-aura-emerald font-bold">${product.category}</span>
                         <h3 class="font-serif text-lg text-aura-pearl font-semibold mt-0.5">${product.name}</h3>
                         <p class="text-xs text-aura-muted mt-1">${product.fabric || 'Exclusive Tailoring'}</p>
-                        
+
                         <div class="mt-3">
                             <label class="block text-[10px] uppercase tracking-wider text-aura-muted font-semibold mb-1.5">Size:</label>
                             <div class="flex gap-2" id="sizes-${product.id}">
@@ -529,7 +530,7 @@
 
             const list = document.getElementById('cart-items-list');
             list.innerHTML = cart.length === 0 ? '<p class="text-center text-xs text-aura-muted py-8">Your bag is empty.</p>' : '';
-            
+
             let total = 0;
 
             cart.forEach(i => {
@@ -578,7 +579,6 @@
             document.getElementById('admin-login-modal').classList.add('hidden');
         }
 
-        // Supabase Auth login. No hardcoded email or password.
         async function handleAdminLogin(e) {
             e.preventDefault();
 
@@ -606,7 +606,6 @@
                     return;
                 }
 
-                // Check that the logged-in Supabase user is the authorized admin.
                 if (!data.user || data.user.id !== ADMIN_UID) {
                     await supabaseClient.auth.signOut();
 
@@ -638,11 +637,9 @@
 
         function enableAdminUI() {
             if (!isAdminMode) return;
-
             document.getElementById('admin-banner').classList.remove('hidden');
         }
 
-        // Real Supabase logout.
         async function adminLogout() {
             const { error } = await supabaseClient.auth.signOut();
 
@@ -663,7 +660,6 @@
         }
 
         async function deleteProduct(id) {
-            // Verify the real Supabase Auth user before deleting.
             if (!isAdminMode || !(await isCurrentAdmin())) {
                 isAdminMode = false;
                 alert('You must be logged in as admin.');
@@ -691,7 +687,6 @@
         async function handleAddNewProduct(e) {
             e.preventDefault();
 
-            // Verify the real Supabase Auth user before inserting.
             if (!isAdminMode || !(await isCurrentAdmin())) {
                 isAdminMode = false;
                 alert('You must be logged in as admin.');
@@ -706,7 +701,7 @@
                 alert('Please enter a valid product price.');
                 return;
             }
-            
+
             const newId = 'aura-' + Date.now();
 
             const productObj = {
@@ -727,7 +722,7 @@
                 alert('Error adding product: ' + error.message);
                 return;
             }
-            
+
             PRODUCTS.unshift({ id: newId, ...productObj });
 
             renderProducts(PRODUCTS);
@@ -756,24 +751,33 @@
             document.getElementById('checkout-modal').classList.add('hidden');
         }
 
+        // Checkout: send the order to Formspree, then notify Telegram through Supabase.
         async function handleCheckoutSubmit(e) {
             e.preventDefault();
+
+            if (!cart.length) {
+                alert('Your shopping bag is empty!');
+                return;
+            }
 
             const submitBtn = document.getElementById('submit-btn');
 
             submitBtn.disabled = true;
             submitBtn.innerText = 'Sending Order...';
 
-            let orderSummary = cart.map(i => `• ${i.name} (مقاس: ${i.size} | كمية: ${i.quantity}) - ${i.price * i.quantity} EGP`).join('\n');
+            const orderSummary = cart.map(i =>
+                `• ${i.name} (مقاس: ${i.size} | كمية: ${i.quantity}) - ${i.price * i.quantity} EGP`
+            ).join('\n');
 
-            let totalAmount = cart.reduce((s, i) => s + (i.price * i.quantity), 0) + ' EGP';
-            let method = document.getElementById('cust-payment').value;
-            let name = document.getElementById('cust-name').value;
-            let phone = document.getElementById('cust-phone').value;
-            let email = document.getElementById('cust-email').value;
-            let gov = document.getElementById('cust-gov').value;
-            let address = document.getElementById('cust-address').value;
-            let notes = document.getElementById('cust-notes').value || 'لا يوجد';
+            const totalAmount = cart.reduce((s, i) => s + (i.price * i.quantity), 0) + ' EGP';
+
+            const method = document.getElementById('cust-payment').value;
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const email = document.getElementById('cust-email').value.trim();
+            const gov = document.getElementById('cust-gov').value;
+            const address = document.getElementById('cust-address').value.trim();
+            const notes = document.getElementById('cust-notes').value.trim() || 'لا يوجد';
 
             const orderPayload = {
                 _subject: `🛍️ أوردر جديد في ANCHOR: ${name} (${totalAmount})`,
@@ -789,6 +793,7 @@
             };
 
             try {
+                // Step 1: Send the order to Formspree.
                 const response = await fetch(FORMSPREE_ENDPOINT, {
                     method: 'POST',
                     headers: {
@@ -798,43 +803,82 @@
                     body: JSON.stringify(orderPayload)
                 });
 
-                if (response.ok) {
-                    const newOrder = {
-                        id: 'ord-' + Date.now(),
-                        name,
-                        phone,
-                        email,
-                        governorate: gov,
-                        address,
-                        paymentMethod: method,
-                        notes,
-                        items: [...cart],
-                        total: totalAmount,
-                        date: new Date().toLocaleString()
-                    };
-
-                    orders.unshift(newOrder);
-                    saveOrdersPermanently();
-
-                    cart = [];
-                    localStorage.removeItem('aura_cart');
-                    
-                    showToast('تم إرسال الطلب بنجاح!');
-                    
-                    setTimeout(() => {
-                        closeCheckoutModal();
-                        window.location.href = window.location.pathname;
-                    }, 1500);
-
-                } else {
-                    alert('حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.');
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Confirm Order';
+                if (!response.ok) {
+                    throw new Error('Formspree rejected the order. Status: ' + response.status);
                 }
 
+                // Step 2: Notify Telegram using the Supabase Edge Function.
+                // The bot token is stored in Supabase Secrets, never in this website.
+                let telegramSent = false;
+
+                try {
+                    const { data: telegramData, error: telegramError } =
+                        await supabaseClient.functions.invoke('telegram_notify', {
+                            body: {
+                                name: name,
+                                phone: phone,
+                                email: email,
+                                governorate: gov,
+                                address: address,
+                                products: orderSummary,
+                                payment_method: method,
+                                notes: notes,
+                                total: totalAmount
+                            }
+                        });
+
+                    if (telegramError) {
+                        throw telegramError;
+                    }
+
+                    if (telegramData && telegramData.success === false) {
+                        throw new Error(telegramData.error || 'Telegram notification failed');
+                    }
+
+                    telegramSent = true;
+
+                } catch (telegramError) {
+                    console.error('Telegram notification error:', telegramError);
+                }
+
+                // Step 3: Save the order locally after Formspree confirms success.
+                const newOrder = {
+                    id: 'ord-' + Date.now(),
+                    name,
+                    phone,
+                    email,
+                    governorate: gov,
+                    address,
+                    paymentMethod: method,
+                    notes,
+                    items: [...cart],
+                    total: totalAmount,
+                    date: new Date().toLocaleString()
+                };
+
+                orders.unshift(newOrder);
+                saveOrdersPermanently();
+
+                cart = [];
+                localStorage.removeItem('aura_cart');
+
+                if (telegramSent) {
+                    showToast('تم إرسال الطلب بنجاح إلى البريد وتيليجرام!');
+                } else {
+                    showToast('تم إرسال الطلب، لكن إشعار تيليجرام فشل.');
+                }
+
+                document.getElementById('checkout-form').reset();
+                updateCartUI();
+
+                setTimeout(() => {
+                    closeCheckoutModal();
+                    window.location.href = window.location.pathname;
+                }, 2000);
+
             } catch (err) {
-                console.error("Formspree error:", err);
-                alert('تعذر الاتصال، تأكد من الإنترنت.');
+                console.error('Order submission error:', err);
+                alert('حدث خطأ أثناء إرسال الطلب. حاول مرة أخرى.');
 
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Confirm Order';
@@ -867,8 +911,10 @@
             container.innerHTML = '';
 
             orders.forEach(order => {
-                let itemsHtml = order.items.map(i => `<li class="text-[11px] text-aura-muted">• ${i.name} (Size: ${i.size}, Qty: ${i.quantity}x) - ${i.price * i.quantity} EGP</li>`).join('');
-                
+                const itemsHtml = order.items.map(i =>
+                    `<li class="text-[11px] text-aura-muted">• ${i.name} (Size: ${i.size}, Qty: ${i.quantity}x) - ${i.price * i.quantity} EGP</li>`
+                ).join('');
+
                 const card = document.createElement('div');
 
                 card.className = 'bg-aura-obsidian p-4 rounded-xl border border-aura-border shadow-sm space-y-2 text-xs';
