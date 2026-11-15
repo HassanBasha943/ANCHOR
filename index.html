@@ -338,12 +338,11 @@
 
     <!-- JavaScript -->
     <script>
-   const SUPABASE_URL = 'https://rfazxdudrjjslszjdmlh.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS'; 
+        const SUPABASE_URL = 'https://rfazxdudrjjslszjdmlh.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmYXp4ZHVkcmpqc2xzempkbWxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDY5ODIsImV4cCI6MjExMDIyMjk4Mn0.b11fN2jpTvmd_qQXgJ9ZTRwZk_PJFwYJvakCehCYye4';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const TELEGRAM_BOT_TOKEN = "9234570210:AAFG1FQ-bGFaMaAq9JtRn5nsDtnE5RmM6oM";
-        const TELEGRAM_CHAT_ID = "6250879624";
+        const FORMSPREE_ENDPOINT = "https://formspree.io/f/xjyybdyz";
 
         const FALLBACK_IMG = 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop';
         
@@ -374,6 +373,7 @@ const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
         async function fetchProductsFromDb() {
             const { data, error } = await supabaseClient.from('products').select('*');
             if (error) {
+                console.error('Supabase fetch error:', error);
                 PRODUCTS = [...DEFAULT_PRODUCTS];
             } else if (data && data.length > 0) {
                 PRODUCTS = data.map(row => ({
@@ -554,7 +554,8 @@ const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
         async function deleteProduct(id) {
             const { error } = await supabaseClient.from('products').delete().eq('id', id);
             if (error) {
-                alert('Error deleting product');
+                console.error('Delete error:', error);
+                alert('Error deleting product: ' + error.message);
                 return;
             }
             PRODUCTS = PRODUCTS.filter(p => p.id !== id);
@@ -581,7 +582,8 @@ const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
             }]);
 
             if (error) {
-                alert('Error adding product');
+                console.error('Insert error:', error);
+                alert('Error adding product: ' + error.message);
                 return;
             }
             
@@ -608,8 +610,11 @@ const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
             document.getElementById('checkout-modal').classList.add('hidden');
         }
 
-        function handleCheckoutSubmit(e) {
+        async function handleCheckoutSubmit(e) {
             e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Sending Order...';
 
             let orderSummary = cart.map(i => `• ${i.name} (مقاس: ${i.size} | كمية: ${i.quantity}) - ${i.price * i.quantity} EGP`).join('\n');
             let totalAmount = cart.reduce((s, i) => s + (i.price * i.quantity), 0) + ' EGP';
@@ -621,43 +626,60 @@ const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
             let address = document.getElementById('cust-address').value;
             let notes = document.getElementById('cust-notes').value || 'لا يوجد';
 
-            let messageText = `🛍️ *أوردر جديد في متجر ANCHOR!*\n\n` +
-                              `👤 *العميل:* ${name}\n` +
-                              `📞 *التليفون:* ${phone}\n` +
-                              `📧 *الإيميل:* ${email}\n` +
-                              `📍 *المحافظة:* ${gov}\n` +
-                              `🏠 *العنوان:* ${address}\n` +
-                              `💳 *طريقة الدفع:* ${method}\n` +
-                              `📝 *ملاحظات:* ${notes}\n\n` +
-                              `🛒 *المنتجات المطلوبة:*\n${orderSummary}\n\n` +
-                              `💰 *الإجمالي النهائي:* ${totalAmount}`;
-
-            // استخدام طريقة آمنة لا يعطلها المتصفح عبر طلب خلفي صامت (Image Beacon method)
-            let telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&parse_mode=Markdown&text=` + encodeURIComponent(messageText);
-            
-            // استخدام Image object لضمان إرسال الطلب لتيليجرام من غير مشاكل CORS
-            const img = new Image();
-            img.src = telegramUrl;
-
-            const newOrder = {
-                id: 'ord-' + Date.now(),
-                name, phone, email, governorate: gov, address,
-                paymentMethod: method,
-                notes, items: [...cart], total: totalAmount,
-                date: new Date().toLocaleString()
+            const orderPayload = {
+                _subject: `🛍️ أوردر جديد في ANCHOR: ${name} (${totalAmount})`,
+                customer_name: name,
+                phone: phone,
+                email: email,
+                governorate: gov,
+                address: address,
+                payment_method: method,
+                notes: notes,
+                order_items: orderSummary,
+                total_amount: totalAmount
             };
-            orders.unshift(newOrder);
-            saveOrdersPermanently();
 
-            cart = [];
-            localStorage.removeItem('aura_cart');
-            
-            showToast('تم إرسال الطلب بنجاح!');
-            
-            setTimeout(() => {
-                closeCheckoutModal();
-                window.location.href = window.location.pathname;
-            }, 1200);
+            try {
+                const response = await fetch(FORMSPREE_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(orderPayload)
+                });
+
+                if (response.ok) {
+                    const newOrder = {
+                        id: 'ord-' + Date.now(),
+                        name, phone, email, governorate: gov, address,
+                        paymentMethod: method,
+                        notes, items: [...cart], total: totalAmount,
+                        date: new Date().toLocaleString()
+                    };
+                    orders.unshift(newOrder);
+                    saveOrdersPermanently();
+
+                    cart = [];
+                    localStorage.removeItem('aura_cart');
+                    
+                    showToast('تم إرسال الطلب بنجاح!');
+                    
+                    setTimeout(() => {
+                        closeCheckoutModal();
+                        window.location.href = window.location.pathname;
+                    }, 1500);
+                } else {
+                    alert('حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Confirm Order';
+                }
+            } catch (err) {
+                console.error("Formspree error:", err);
+                alert('تعذر الاتصال، تأكد من الإنترنت.');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Confirm Order';
+            }
         }
 
         function toggleOrdersModal() {
@@ -735,4 +757,3 @@ const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
     </script>
 </body>
 </html>
-
