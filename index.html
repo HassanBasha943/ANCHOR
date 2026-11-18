@@ -813,7 +813,7 @@
 
                 try {
                     const { data: telegramData, error: telegramError } =
-                        await supabaseClient.functions.invoke('telegram_notify', {
+                        await supabaseClient.functions.invoke('anchor-telegram-orders', {
                             body: {
                                 name: name,
                                 phone: phone,
