@@ -752,103 +752,130 @@
 
         // Checkout: send the order directly to Telegram through Supabase.
         // Formspree has been completely removed.
-        async function handleCheckoutSubmit(e) {
-            e.preventDefault();
+     async function handleCheckoutSubmit(e) {
+    e.preventDefault();
 
-            if (!cart.length) {
-                alert('Your shopping bag is empty!');
-                return;
-            }
+    if (!cart.length) {
+        alert('Your shopping bag is empty!');
+        return;
+    }
 
-            const submitBtn = document.getElementById('submit-btn');
+    const submitBtn = document.getElementById('submit-btn');
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Sending Order...';
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Sending Order...';
 
-            const orderSummary = cart.map(i =>
-                `• ${i.name} (مقاس: ${i.size} | كمية: ${i.quantity}) - ${i.price * i.quantity} EGP`
-            ).join('\n');
+    const orderSummary = cart.map(i =>
+        `• ${i.name} (مقاس: ${i.size} | كمية: ${i.quantity}) - ${i.price * i.quantity} EGP`
+    ).join('\n');
 
-            const totalAmount = cart.reduce(
-                (s, i) => s + (i.price * i.quantity), 0
-            ) + ' EGP';
+    const totalAmount = cart.reduce(
+        (s, i) => s + (i.price * i.quantity), 0
+    ) + ' EGP';
 
-            const method = document.getElementById('cust-payment').value;
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-            const email = document.getElementById('cust-email').value.trim();
-            const gov = document.getElementById('cust-gov').value;
-            const address = document.getElementById('cust-address').value.trim();
-            const notes = document.getElementById('cust-notes').value.trim() || 'لا يوجد';
+    const method = document.getElementById('cust-payment').value;
+    const name = document.getElementById('cust-name').value.trim();
+    const phone = document.getElementById('cust-phone').value.trim();
+    const email = document.getElementById('cust-email').value.trim();
+    const gov = document.getElementById('cust-gov').value;
+    const address = document.getElementById('cust-address').value.trim();
+    const notes = document.getElementById('cust-notes').value.trim() || 'لا يوجد';
 
-            try {
-                // Send order directly to Telegram using Supabase Edge Function.
-                const { data: telegramData, error: telegramError } =
-                    await supabaseClient.functions.invoke('anchor-telegram-orders', {
-                        body: {
-                            name: name,
-                            phone: phone,
-                            email: email,
-                            governorate: gov,
-                            address: address,
-                            products: orderSummary,
-                            payment_method: method,
-                            notes: notes,
-                            total: totalAmount
-                        }
-                    });
-
-                if (telegramError) {
-                    throw telegramError;
-                }
-
-                if (!telegramData || telegramData.success !== true) {
-                    throw new Error(
-                        telegramData?.error || 'Telegram notification failed'
-                    );
-                }
-
-                // Save the order locally only after Telegram confirms success.
-                const newOrder = {
-                    id: 'ord-' + Date.now(),
+    try {
+        const { data: telegramData, error: telegramError } =
+            await supabaseClient.functions.invoke('anchor-telegram-orders', {
+                body: {
                     name,
                     phone,
                     email,
                     governorate: gov,
                     address,
-                    paymentMethod: method,
+                    products: orderSummary,
+                    payment_method: method,
                     notes,
-                    items: [...cart],
-                    total: totalAmount,
-                    date: new Date().toLocaleString()
-                };
+                    total: totalAmount
+                }
+            });
 
-                orders.unshift(newOrder);
-                saveOrdersPermanently();
+        if (telegramError) {
+            let details = telegramError.message || 'Unknown function error';
 
-                cart = [];
-                localStorage.removeItem('aura_cart');
+            if (telegramError.context) {
+                try {
+                    const responseText =
+                        await telegramError.context.clone().text();
 
-                showToast('تم إرسال الطلب بنجاح إلى تيليجرام!');
-
-                document.getElementById('checkout-form').reset();
-                updateCartUI();
-
-                setTimeout(() => {
-                    closeCheckoutModal();
-                    window.location.href = window.location.pathname;
-                }, 2000);
-
-            } catch (err) {
-                console.error('Order submission error:', err);
-
-                alert('فشل إرسال الطلب إلى تيليجرام. لم يتم تأكيد الطلب. حاول مرة أخرى.');
-
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Confirm Order';
+                    if (responseText) {
+                        details += '\n' + responseText;
+                    }
+                } catch (readError) {
+                    console.warn(
+                        'Could not read function error response:',
+                        readError
+                    );
+                }
             }
+
+            console.error('Telegram Function Error:', telegramError);
+            throw new Error(details);
         }
 
+        if (!telegramData || telegramData.success !== true) {
+            console.error('Telegram Function Response:', telegramData);
+
+            throw new Error(
+                telegramData?.error ||
+                'Telegram did not confirm the order.'
+            );
+        }
+
+        // Save the order only after Telegram confirms success.
+        const newOrder = {
+            id: 'ord-' + Date.now(),
+            name,
+            phone,
+            email,
+            governorate: gov,
+            address,
+            paymentMethod: method,
+            notes,
+            items: [...cart],
+            total: totalAmount,
+            date: new Date().toLocaleString()
+        };
+
+        orders.unshift(newOrder);
+        saveOrdersPermanently();
+
+        // Clear cart only after successful Telegram confirmation.
+        cart = [];
+        localStorage.removeItem('aura_cart');
+
+        document.getElementById('checkout-form').reset();
+
+        updateCartUI();
+
+        showToast('تم إرسال الطلب بنجاح إلى تيليجرام!');
+
+        setTimeout(() => {
+            closeCheckoutModal();
+            window.location.href = window.location.pathname;
+        }, 2000);
+
+    } catch (err) {
+        console.error('Order submission error:', err);
+
+        alert(
+            'فشل إرسال الأوردر إلى تيليجرام.\n\n' +
+            (err?.message || 'Unknown error') +
+            '\n\nالسلة لم يتم مسحها، حاول مرة أخرى.'
+        );
+
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Confirm Order';
+    }
+}
         function toggleOrdersModal() {
             if (!isAdminMode) {
                 alert('Admin access required.');
