@@ -340,9 +340,14 @@
 
     <!-- JavaScript -->
     <script>
-        const SUPABASE_URL = 'https://rfazxdudrjjslszjdmlh.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmYXp4ZHVkcmpqc2xzempkbWxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDY5ODIsImV4cCI6MjExMDIyMjk4Mn0.b11fN2jpTvmd_qQXgJ9ZTRwZk_PJFwYJvakCehCYye4';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://rfazxdudrjjslszjdmlh.supabase.co';
+
+const SUPABASE_KEY = 'sb_publishable_g5sk-Uy9_lLzrXEVhncnlw_v_DPDhHS';
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
         // Only this Supabase Auth user is allowed to use the admin dashboard.
         const ADMIN_UID = '23db95f7-17b0-4f13-9711-7059c4449f02';
